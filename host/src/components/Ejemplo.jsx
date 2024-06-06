@@ -1,8 +1,11 @@
 import React from 'react';
+
 import ErrorBoundary from 'utilities/ErrorBoundary';
+import Error from 'utilities/Error';
 import Hello from 'utilities/Hello';
 // import apiService from 'utilities/apiService';
-// import eventBus from 'utilities/eventBus';
+import { dragonballService, detallePersonajeService } from 'utilities/apiService';
+import eventBus from 'utilities/eventBus';
 import 'utilities/styles';
 
 // import funcion from 'utilities/funcion';
@@ -19,12 +22,39 @@ const Ejemplo = () => {
   // }, []);
 
   // Usa apiService para consumir servicios
-//   apiService.get('/api/data').then(response => {
-//     console.log(response.data);
-//   });
+  // apiService.get()
+  //   .then(response => {
+  //     console.log(response.data);
+  //   })
+  //   .catch(error => {
+  //     console.error('Error fetching Dragon Ball characters:', error);
+  //   })
 
-  // Usa eventBus para comunicarte entre microfrontends
-//   eventBus.emit('someEvent', { data: 'some data' });
+  dragonballService.get('/')
+    .then(response => {
+      console.log({dragonball: response.data});
+    })
+    .catch(error => {
+      console.error('Error fetching Dragon Ball:', error);
+    });
+
+  detallePersonajeService.get('/')
+    .then(response => {
+      console.log({detallePersonaje: response.data});
+    })
+    .catch(error => {
+      console.error('Error fetching detalle personaje:', error);
+    });
+
+  //Publicar un evento
+  eventBus.publish('myEvent', { key: 'Marcela' });
+
+  // Suscribirse a un evento
+  // eventBus.subscribe('myEvent', (data) => {
+  //   console.log('Evento recibido:', data);
+  // });
+  // Para cancelar la suscripción
+  // eventBus.unsubscribe('myEvent', callbackFunction);
 
   return (
     <>
@@ -32,9 +62,9 @@ const Ejemplo = () => {
         <h1>Mi Aplicación con Módulos Federados</h1>
       </div>
 
-      <ErrorBoundary>
-        <Hello/>
-      </ErrorBoundary>
+      <Error>
+        <Hello />
+      </Error>
     </>
   );
 };

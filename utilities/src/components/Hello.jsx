@@ -2,7 +2,7 @@ import React from 'react'
 
 const Hello = () => {
 
-    // throw new Error("Error funcion");
+    throw new Error("Error funcion 1");
 
   return (
     <div>Hello desde utils</div>

@@ -1,25 +1,19 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { 
-  ModuleFederationPlugin 
-} = require('webpack').container;
+const HtmlWebPackPlugin = require("html-webpack-plugin");
+const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
 
+const deps = require("./package.json").dependencies;
 module.exports = {
-  entry: './src/index.ts',
-  mode: 'development',
-  devServer: {
-    static: {
-      directory: path.join(__dirname, 'dist'),
-    },
-    port: 8000,
-  },
-
   output: {
-    publicPath: 'auto',
+    publicPath: "http://localhost:8000/",
   },
 
   resolve: {
     extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
+  },
+
+  devServer: {
+    port: 8000,
+    historyApiFallback: true,
   },
 
   module: {
@@ -54,26 +48,29 @@ module.exports = {
     new ModuleFederationPlugin({
       name: 'utilities',
       filename: 'remoteEntry.js',
+      remotes: {},
       exposes: {
         './Hello': './src/components/Hello.jsx',
         './ErrorBoundary': './src/errors/ErrorBoundary.jsx',
+        './Error': './src/errors/Error.jsx',
         './styles': './src/styles/style.css',
-        // './apiService': './src/services/apiService.js',
-        // './eventBus': './src/communication/eventBus.js',
+        './apiService': './src/services/apiService.js',
+        './eventBus': './src/communication/eventBus.js',
       },
       shared: {
-        react: { 
-          singleton: true, 
-          eager: true 
+        ...deps,
+        react: {
+          singleton: true,
+          requiredVersion: deps.react,
         },
-        'react-dom': { 
-          singleton: true, 
-          eager: true 
+        "react-dom": {
+          singleton: true,
+          requiredVersion: deps["react-dom"],
         },
       },
     }),
-    new HtmlWebpackPlugin({
-      template: './src/index.html',
+    new HtmlWebPackPlugin({
+      template: "./src/index.html",
     }),
   ],
 };
